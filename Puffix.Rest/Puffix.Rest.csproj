@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>Puffix.io - Romain Ehret</Authors>
+		<Company>Puffix.io - Romain Ehret</Company>
+		<PackageLicenseFile>Licence.txt</PackageLicenseFile>
+		<Title>Puffix Rest API</Title>
+		<Description>API to handle REST calls.</Description>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/EhRom/Puffix.IoC</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/EhRom/Puffix.IoC</RepositoryUrl>
+		<Copyright>Copyright 2024 (c) Puffix / Romain Ehret. All rights reserved.</Copyright>
+		<Description>Minimal library to manage REST API calls in your project.</Description>
+		<PackageTags>IoC Puffix</PackageTags>
+		<Version>3.2.0</Version>
+		<AssemblyVersion>3.2.0.0</AssemblyVersion>
+		<FileVersion>3.2.0.0</FileVersion>
+		<PackageReleaseNotes>First release</PackageReleaseNotes>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\Resources\icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+		<None Include="Licence.txt">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puffix.Rest", "Puffix.Rest\Puffix.Rest.csproj", "{4BC71006-34A7-40B3-BBC5-826801ABCD4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Puffix.Rest", "Tests.Puffix.Rest\Tests.Puffix.Rest.csproj", "{B119D23A-C594-47B6-A67E-6A62F3A9FFAB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GithubBuild", "GithubBuild", "{16E0AD23-C8C5-4AF3-932B-3957BE69AB8C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet-core.yml = .github\workflows\dotnet-core.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4BC71006-34A7-40B3-BBC5-826801ABCD4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BC71006-34A7-40B3-BBC5-826801ABCD4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BC71006-34A7-40B3-BBC5-826801ABCD4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BC71006-34A7-40B3-BBC5-826801ABCD4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B119D23A-C594-47B6-A67E-6A62F3A9FFAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B119D23A-C594-47B6-A67E-6A62F3A9FFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B119D23A-C594-47B6-A67E-6A62F3A9FFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B119D23A-C594-47B6-A67E-6A62F3A9FFAB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66B82FDF-FB1A-41C7-AF98-5C51FCF08B94}
+	EndGlobalSection
+EndGlobal
