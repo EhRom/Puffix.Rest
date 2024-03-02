@@ -21,7 +21,7 @@ public class OvhApiTests
         container = IoCContainer.CreateNew(configuration);
     }
 
-    [Test]
+    //[Test] > Sample method
     public async Task LoadLocationsTest()
     {
         const string baseUri = "https://eu.api.ovh.com/1.0";

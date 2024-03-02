@@ -26,7 +26,7 @@ public class OpenWeatherApiTests
         container = IoCContainer.CreateNew(configuration);
     }
 
-    [Test]
+    //[Test] > Sample method
     public async Task LoadLocationsTest()
     {
         try

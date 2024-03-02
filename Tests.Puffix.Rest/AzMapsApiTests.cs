@@ -23,7 +23,7 @@ public class AzMapsApiTests
         container = IoCContainer.CreateNew(configuration);
     }
 
-    [Test]
+    //[Test] > Sample method
     public async Task Test()
     {
         const string azMapsBaseUri = "https://atlas.microsoft.com";
