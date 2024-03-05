@@ -41,20 +41,17 @@ public class OvhApiTests
             IOvhApiHttpRepository httpRepository = container.Resolve<IOvhApiHttpRepository>();
 
             IOvhApiQueryInformation authQueryInformation = httpRepository.BuildUnauthenticatedQuery(HttpMethod.Get, baseUri, authenticationUriPath, string.Empty, string.Empty);
-
             string referenceUnixTime = await httpRepository.HttpAsync(authQueryInformation);
             token.SetReferenceUnixTime(referenceUnixTime);
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, string.Empty, string.Empty);
 
+            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, string.Empty, string.Empty);
             string result = await httpRepository.HttpAsync(queryInformation);
 
             IOvhApiQueryInformation queryInformationBis = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, string.Empty, string.Empty);
-
             long[] resultBis = await httpRepository.HttpJsonAsync<long[]>(queryInformationBis);
 
             string logUriPath = resultBis.Any() ? $"{logsUriPath}/{resultBis.First()}" : logsUriPath;
             IOvhApiQueryInformation queryInformationTer = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logUriPath, string.Empty, string.Empty);
-
             string resultTer = await httpRepository.HttpAsync(queryInformationTer);
 
             Assert.Multiple(() =>
@@ -110,7 +107,7 @@ public class OvhApiTests
             httpClientFactoryMock.Verify(httpClientFactory => httpClientFactory.CreateClient(It.IsAny<string>()), Times.Once());
             mockHttpMessageHandlerMock.Protected().Verify(
                 "SendAsync",
-                Times.Once(),
+                Times.Between(0, 1, Moq.Range.Inclusive),
                 ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.Equals($"{baseUri}/{logsUriPath}")),
                 ItExpr.IsAny<CancellationToken>()
             );

@@ -61,6 +61,28 @@ public class SampleApiToken(IConfiguration configuration) : ISampleApiToken
 }
 ```
 
+### Query path token
+
+Create the token interface:
+
+```csharp
+public interface ISampleApiToken : IQueryPathToken { }
+```
+
+Token implementation:
+
+```csharp
+public class SampleApiToken(IConfiguration configuration) : ISampleApiToken
+{
+    private readonly string token = configuration["tokenParamaterName"] ?? string.Empty;
+
+    public string GetQueryPath()
+    {
+        return token;
+    }
+}
+```
+
 ## Query description
 
 The query description embeds and manages all the information for the query, like the base URI, query path, query parameters, query headers, or body. It controls the construction of the full URI with the path, the parameters, and the token, if needed. It also controls the body serialization or the headers sent to the targeted service. A contract is defined and inherits from the base contract, the `IQueryInformation<TokenT>` interface. Then a conctrete class is created and inherits from the defined contract, and the `QueryInformation<TokenT>` base class.
@@ -74,20 +96,18 @@ public interface ISampleApiQueryInformation : IQueryInformation<ISampleApiToken>
 Query information implementation:
 
 ```csharp
-public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? token, IDictionary<string, string> headers, string uri, string queryParameters, string queryContent) :
-    QueryInformation<ISampleApiToken>(httpMethod, token, headers, uri, queryParameters, queryContent),
+public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? token, IDictionary<string, string> headers, string baseUri, string queryPath, string queryParameters, string queryContent) :
+    QueryInformation<ISampleApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
     ISampleApiQueryInformation
 {
     public static ISampleApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent)
     {
-        string uri = BuildUriWithPath(apiUri, queryPath);
-        return new SampleApiQueryInformation(httpMethod, default, new Dictionary<string, string>(), uri, queryParameters, queryContent);
+        return new SampleApiQueryInformation(httpMethod, default, new Dictionary<string, string>(), apiUri, queryPath, queryParameters, queryContent);
     }
 
     public static ISampleApiQueryInformation  CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent)
     {
-        string uri = BuildUriWithPath(apiUri, queryPath);
-        return new SampleApiQueryInformation(httpMethod, token, new Dictionary<string, string>(), uri, queryParameters, queryContent);
+        return new SampleApiQueryInformation(httpMethod, token, new Dictionary<string, string>(), apiUri, queryPath, queryParameters, queryContent);
     }
 }
 ```

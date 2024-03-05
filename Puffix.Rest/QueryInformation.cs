@@ -2,11 +2,12 @@
 
 namespace Puffix.Rest;
 
-public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, string> headers, string uri, string queryParameters, string queryContent) :
+public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, string> headers, string baseUri, string queryPath, string queryParameters, string queryContent) :
     IQueryInformation<TokenT>
         where TokenT : IToken
 {
-    protected readonly string uri = uri;
+    protected readonly string baseUri = baseUri;
+    protected readonly string queryPath = queryPath;
     protected readonly string queryParameters = queryParameters;
     protected readonly string queryContent = queryContent;
 
@@ -18,19 +19,48 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
     public IDictionary<string, string> Headers { get; } = headers;
 
-    protected static string BuildUriWithPath(string apiUri, string queryPath)
+    //protected static string BuildUriWithPath(string apiUri, string queryPath)
+    //{
+    //    string builtUri = apiUri.TrimEnd('/');
+    //    builtUri = string.IsNullOrEmpty(queryPath) ? builtUri : $"{builtUri}/{queryPath.TrimStart('/')}";
+
+    //    return builtUri;
+    //}
+
+    public virtual Uri GetUriWithParameters()
     {
-        string builtUri = apiUri.TrimEnd('/');
-        builtUri = string.IsNullOrEmpty(queryPath) ? builtUri : $"{builtUri}/{queryPath.TrimStart('/')}";
+        string processedQueryParameter = BuildQueryParameters();
+        string uriWithPath = BuildUriWithPath();
+
+        string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter}";
+
+        return new Uri(completeUri);
+    }
+
+    protected virtual string BuildUriWithPath()
+    {
+        string builtUri = baseUri.TrimEnd('/');
+
+        string builtQueryPath = (Token is not null && Token is IQueryPathToken) ?
+                                            (Token as IQueryPathToken)!.GetQueryPath() :
+                                            string.Empty;
+
+        builtQueryPath = string.IsNullOrEmpty(queryPath) ?
+                    builtQueryPath :
+                        (string.IsNullOrEmpty(builtQueryPath) ?
+                            queryPath.Trim('/') :
+                            $"{builtQueryPath.Trim('/')}/{queryPath.Trim('/')}");
+
+        builtUri = string.IsNullOrEmpty(builtQueryPath) ? builtUri : $"{builtUri}/{builtQueryPath}";
 
         return builtUri;
     }
 
-    public virtual Uri GetUriWithParameters()
+    protected virtual string BuildQueryParameters()
     {
         string processedQueryParameter = (Token is not null && Token is IQueryParameterToken) ?
-                (Token as IQueryParameterToken)!.GetQueryParameter() :
-                string.Empty;
+                                            (Token as IQueryParameterToken)!.GetQueryParameter() :
+                                            string.Empty;
 
         processedQueryParameter = string.IsNullOrEmpty(queryParameters) ?
                     processedQueryParameter :
@@ -38,9 +68,7 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
                         queryParameters.TrimStart('?') :
                         $"{processedQueryParameter}&{queryParameters.TrimStart('?')}");
 
-        string builtUri = string.IsNullOrEmpty(processedQueryParameter) ? uri : $"{uri}?{processedQueryParameter}";
-
-        return new Uri(builtUri);
+        return processedQueryParameter;
     }
 
     public virtual HttpContent GetQueryContent()
