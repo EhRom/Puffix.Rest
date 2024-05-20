@@ -28,7 +28,7 @@ public class OvhApiTests
     }
 
     //[Test] // > Sample method, only for local use
-    public async Task LoadLocationsTest()
+    public async Task GetPrfileTest()
     {
         const string baseUri = "https://eu.api.ovh.com/1.0";
         const string authenticationUriPath = "auth/time";

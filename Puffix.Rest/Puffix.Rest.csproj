@@ -18,10 +18,10 @@
 		<Copyright>Copyright 2024 (c) Puffix / Romain Ehret. All rights reserved.</Copyright>
 		<Description>Minimal library to manage REST API calls in your project.</Description>
 		<PackageTags>IoC Puffix</PackageTags>
-		<Version>3.2.1</Version>
-		<AssemblyVersion>3.2.1.0</AssemblyVersion>
-		<FileVersion>3.2.1.0</FileVersion>
-		<PackageReleaseNotes>First release</PackageReleaseNotes>
+		<Version>3.2.2</Version>
+		<AssemblyVersion>3.2.2.0</AssemblyVersion>
+		<FileVersion>3.2.2.0</FileVersion>
+		<PackageReleaseNotes>Update dependencies</PackageReleaseNotes>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
