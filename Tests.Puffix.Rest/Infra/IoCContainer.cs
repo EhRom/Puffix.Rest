@@ -11,11 +11,11 @@ public class IoCContainer : IIoCContainerWithConfiguration
 {
     private readonly IContainer? container;
 
-    public IConfigurationRoot ConfigurationRoot { get; }
+    public IConfiguration Configuration { get; }
 
     public IoCContainer(ContainerBuilder containerBuilder, IConfigurationRoot configuration)
     {
-        ConfigurationRoot = configuration;
+        Configuration = configuration;
 
         containerBuilder.RegisterAssemblyTypes
                         (
@@ -26,7 +26,7 @@ public class IoCContainer : IIoCContainerWithConfiguration
 
         // Self-register the container.
         containerBuilder.Register(_ => this).As<IIoCContainer>().SingleInstance();
-        containerBuilder.Register(_ => ConfigurationRoot).As<IConfiguration>().SingleInstance();
+        containerBuilder.Register(_ => Configuration).As<IConfiguration>().SingleInstance();
 
         container = containerBuilder.Build();
     }

@@ -1,28 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>Puffix.io - Romain Ehret</Authors>
 		<Company>Puffix.io - Romain Ehret</Company>
-		<PackageLicenseFile>Licence.txt</PackageLicenseFile>
-		<Title>Puffix Rest API</Title>
-		<Description>API to handle REST calls.</Description>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageProjectUrl>https://github.com/EhRom/Puffix.IoC</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/EhRom/Puffix.IoC</RepositoryUrl>
-		<Copyright>Copyright 2024 (c) Puffix / Romain Ehret. All rights reserved.</Copyright>
+		<Authors>Puffix.io - Romain Ehret</Authors>
 		<Description>Minimal library to manage REST API calls in your project.</Description>
-		<PackageTags>IoC Puffix</PackageTags>
-		<Version>3.2.3</Version>
-		<AssemblyVersion>3.2.3.0</AssemblyVersion>
-		<FileVersion>3.2.3.0</FileVersion>
-		<PackageReleaseNotes>Update dependencies</PackageReleaseNotes>
+		<Copyright>Copyright 2024 (c) Puffix / Romain Ehret. All rights reserved.</Copyright>
+		<PackageLicenseFile>Licence.txt</PackageLicenseFile>
+		<PackageProjectUrl>https://github.com/EhRom/Puffix.IoC</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/EhRom/Puffix.IoC</RepositoryUrl>
+		<RepositoryType>REST API Puffix Framework</RepositoryType>
+		<PackageReleaseNotes>Update dependencies</PackageReleaseNotes>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Title>Puffix Rest API</Title>
+		<PackageTags>IoC Puffix</PackageTags>
+		<AssemblyVersion>3.3.0.0</AssemblyVersion>
+		<FileVersion>3.3.0.0</FileVersion>
+		<Version>3.3.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -41,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 	</ItemGroup>
 
 </Project>

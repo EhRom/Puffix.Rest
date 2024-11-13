@@ -40,7 +40,7 @@ public class OpenWeatherApiTests
             IOpenWeatherApiToken token = container.Resolve<IOpenWeatherApiToken>();
             IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
 
-            string owWeatherApiBaseUri = (container.ConfigurationRoot[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
+            string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
             string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
             
             IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
@@ -81,7 +81,7 @@ public class OpenWeatherApiTests
                 .Returns(httpClient);
 
             // Test
-            string owWeatherApiBaseUri = (container.ConfigurationRoot[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
+            string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
             string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
 
             IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
