@@ -2,5 +2,5 @@
 
 public interface IHeaderToken : IToken
 {
-    IDictionary<string, string> GetHeaders();
+    IDictionary<string, IEnumerable<string>> GetHeaders();
 }

@@ -2,5 +2,7 @@
 
 public interface IQueryParameterToken : IToken
 {
-    string GetQueryParameter();
+    string GetQueryParameterName();
+
+    string GetQueryParameterValue();
 }

@@ -9,11 +9,11 @@ public interface IQueryInformation<TokenT>
 
     bool IsHeaderToken { get; }
 
-    IDictionary<string, string> Headers { get; }
+    IDictionary<string, IEnumerable<string>> Headers { get; }
 
     Uri GetUriWithParameters();
 
     HttpContent GetQueryContent();
 
-    IDictionary<string, string> GetAuthenticationHeader();
+    IDictionary<string, IEnumerable<string>> GetAuthenticationHeader();
 }

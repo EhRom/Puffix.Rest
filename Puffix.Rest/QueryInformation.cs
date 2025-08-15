@@ -1,14 +1,15 @@
-﻿using System.Text;
+﻿using Microsoft.Extensions.Primitives;
+using System.Text;
 
 namespace Puffix.Rest;
 
-public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, string> headers, string baseUri, string queryPath, string queryParameters, string queryContent) :
+public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
     IQueryInformation<TokenT>
         where TokenT : IToken
 {
     protected readonly string baseUri = baseUri;
     protected readonly string queryPath = queryPath;
-    protected readonly string queryParameters = queryParameters;
+    protected readonly IDictionary<string, string> queryParameters = queryParameters;
     protected readonly string queryContent = queryContent;
 
     public HttpMethod QuerytHttpMethod { get; } = httpMethod;
@@ -17,15 +18,7 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
     public bool IsHeaderToken => Token is not null && Token is IHeaderToken;
 
-    public IDictionary<string, string> Headers { get; } = headers;
-
-    //protected static string BuildUriWithPath(string apiUri, string queryPath)
-    //{
-    //    string builtUri = apiUri.TrimEnd('/');
-    //    builtUri = string.IsNullOrEmpty(queryPath) ? builtUri : $"{builtUri}/{queryPath.TrimStart('/')}";
-
-    //    return builtUri;
-    //}
+    public IDictionary<string, IEnumerable<string>> Headers { get; } = headers;
 
     public virtual Uri GetUriWithParameters()
     {
@@ -58,17 +51,22 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
     protected virtual string BuildQueryParameters()
     {
-        string processedQueryParameter = (Token is not null && Token is IQueryParameterToken) ?
-                                            (Token as IQueryParameterToken)!.GetQueryParameter() :
-                                            string.Empty;
+        StringBuilder queryParameterBuilder = new StringBuilder();
+        if (Token is not null && Token is IQueryParameterToken)
+            queryParameterBuilder.Append($"{(Token as IQueryParameterToken)!.GetQueryParameterName()}={(Token as IQueryParameterToken)!.GetQueryParameterValue()}");
 
-        processedQueryParameter = string.IsNullOrEmpty(queryParameters) ?
-                    processedQueryParameter :
-                    (string.IsNullOrEmpty(processedQueryParameter) ?
-                        queryParameters.TrimStart('?') :
-                        $"{processedQueryParameter}&{queryParameters.TrimStart('?')}");
 
-        return processedQueryParameter;
+        foreach (string parameterKey in queryParameters.Keys)
+        {
+            if (queryParameterBuilder.Length > 0)
+                queryParameterBuilder.Append("&");
+
+            queryParameterBuilder.Append($"{parameterKey}={queryParameters[parameterKey]}");
+        }
+
+        return queryParameterBuilder.Length > 0 ?
+                    $"?{queryParameterBuilder}"
+                    : string.Empty;
     }
 
     public virtual HttpContent GetQueryContent()
@@ -76,8 +74,8 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
         return new StringContent(queryContent ?? string.Empty, Encoding.UTF8, "application/json");
     }
 
-    public virtual IDictionary<string, string> GetAuthenticationHeader()
+    public virtual IDictionary<string, IEnumerable<string>> GetAuthenticationHeader()
     {
-        return IsHeaderToken ? (Token as IHeaderToken)!.GetHeaders() : new Dictionary<string, string>();
+        return IsHeaderToken ? (Token as IHeaderToken)!.GetHeaders() : new Dictionary<string, IEnumerable<string>>();
     }
 }

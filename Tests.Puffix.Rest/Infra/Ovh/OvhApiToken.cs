@@ -33,12 +33,12 @@ public class OvhApiToken(IConfiguration configuration) : IOvhApiToken
         return ($"$1${signature}", currentTimestamp);
     }
 
-    public IDictionary<string, string> GetHeaders()
+    public IDictionary<string, IEnumerable<string>> GetHeaders()
     {
-        return new Dictionary<string, string>()
+        return new Dictionary<string, IEnumerable<string>>()
         {
-            { IOvhApiToken.OVH_APP_HEADER, ovhApplicationKey },
-            { IOvhApiToken.OVH_CONSUMER_HEADER, ovhConsumerKey }
+            { IOvhApiToken.OVH_APP_HEADER, [ovhApplicationKey] },
+            { IOvhApiToken.OVH_CONSUMER_HEADER, [ovhConsumerKey] }
         };
     }
 }

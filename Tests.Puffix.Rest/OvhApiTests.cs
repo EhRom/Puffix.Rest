@@ -40,18 +40,18 @@ public class OvhApiTests
             IOvhApiToken token = container.Resolve<IOvhApiToken>();
             IOvhApiHttpRepository httpRepository = container.Resolve<IOvhApiHttpRepository>();
 
-            IOvhApiQueryInformation authQueryInformation = httpRepository.BuildUnauthenticatedQuery(HttpMethod.Get, baseUri, authenticationUriPath, string.Empty, string.Empty);
+            IOvhApiQueryInformation authQueryInformation = httpRepository.BuildUnauthenticatedQuery(HttpMethod.Get, baseUri, authenticationUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
             string referenceUnixTime = await httpRepository.HttpAsync(authQueryInformation);
             token.SetReferenceUnixTime(referenceUnixTime);
 
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, string.Empty, string.Empty);
+            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
             string result = await httpRepository.HttpAsync(queryInformation);
 
-            IOvhApiQueryInformation queryInformationBis = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, string.Empty, string.Empty);
+            IOvhApiQueryInformation queryInformationBis = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
             long[] resultBis = await httpRepository.HttpJsonAsync<long[]>(queryInformationBis);
 
             string logUriPath = resultBis.Any() ? $"{logsUriPath}/{resultBis.First()}" : logsUriPath;
-            IOvhApiQueryInformation queryInformationTer = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logUriPath, string.Empty, string.Empty);
+            IOvhApiQueryInformation queryInformationTer = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
             string resultTer = await httpRepository.HttpAsync(queryInformationTer);
 
             Assert.Multiple(() =>
@@ -99,7 +99,7 @@ public class OvhApiTests
                 .Returns(httpClient);
 
             // Test
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, string.Empty, string.Empty);
+            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
             //string actualResult = await httpRepository.HttpAsync(queryInformation);
             long[] actualResult = await httpRepository.HttpJsonAsync<long[]>(queryInformation);
 

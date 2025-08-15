@@ -6,13 +6,25 @@ public class AzMapsApiHttpRepository(IHttpClientFactory httpClientFactory) :
     RestHttpRepository<IAzMapsApiQueryInformation, IAzMapsApiToken>(httpClientFactory),
     IAzMapsApiHttpRepository
 {
-    public override IAzMapsApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent)
+    public override IAzMapsApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
-        return AzMapsApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, apiUri, queryPath, queryParameters, queryContent);
+        IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
+        return AzMapsApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 
-    public override IAzMapsApiQueryInformation BuildAuthenticatedQuery(IAzMapsApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent)
+    public override IAzMapsApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
-        return AzMapsApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, apiUri, queryPath, queryParameters, queryContent);
+        return AzMapsApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+    }
+
+    public override IAzMapsApiQueryInformation BuildAuthenticatedQuery(IAzMapsApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    {
+        IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
+        return AzMapsApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+    }
+
+    public override IAzMapsApiQueryInformation BuildAuthenticatedQuery(IAzMapsApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    {
+        return AzMapsApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 }

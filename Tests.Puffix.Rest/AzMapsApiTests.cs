@@ -3,6 +3,7 @@ using Moq;
 using Moq.Protected;
 using Puffix.IoC;
 using Puffix.IoC.Configuration;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using Tests.Puffix.Rest.Infra;
@@ -37,7 +38,13 @@ public class AzMapsApiTests
             IAzMapsApiToken token = container.Resolve<IAzMapsApiToken>();
             IAzMapsApiHttpRepository httpRepository = container.Resolve<IAzMapsApiHttpRepository>();
 
-            string queryParameters = "api-version=1.0&language=en-US&query=Villeurbanne";
+            IDictionary<string, string> queryParameters = new Dictionary<string, string>()
+            {
+                { "api-version", "1.0" },
+                { "language", "language=en-US" },
+                { "query", "Villeurbanne" }
+            };
+
             IAzMapsApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, azMapsBaseUri, azMapsSearchAddressQeuryPath, queryParameters, string.Empty);
 
             string actualResult = await httpRepository.HttpAsync(queryInformation);
@@ -56,9 +63,17 @@ public class AzMapsApiTests
     {
         const string azMapsBaseUri = "https://atlas.microsoft.com";
         const string azMapsSearchAddressQueryPath = $"search/address/json";
-        const string queryParameters = "api-version=1.0&language=en-US&query=Villeurbanne";
+
         try
         {
+            IDictionary<string, string> queryParameters = new Dictionary<string, string>()
+            {
+                { "api-version", "1.0" },
+                { "language", "language=en-US" },
+                { "query", "Villeurbanne" }
+            };
+            string expectedQueryParameters = BuildExpectedQueryParameters(queryParameters);
+
             BuildMocks(container, out IAzMapsApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IAzMapsApiHttpRepository httpRepository);
 
             // Register HTTP Calls
@@ -87,7 +102,7 @@ public class AzMapsApiTests
             mockHttpMessageHandlerMock.Protected().Verify(
                 "SendAsync",
                 Times.Between(0, 1, Moq.Range.Inclusive),
-                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.StartsWith($"{azMapsBaseUri}/{azMapsSearchAddressQueryPath}") && req.RequestUri!.AbsoluteUri.EndsWith(queryParameters)),
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.StartsWith($"{azMapsBaseUri}/{azMapsSearchAddressQueryPath}") && req.RequestUri!.AbsoluteUri.EndsWith(expectedQueryParameters)),
                 ItExpr.IsAny<CancellationToken>()
             );
 
@@ -103,6 +118,11 @@ public class AzMapsApiTests
         {
             Assert.Fail($"Error while testing {nameof(UnitTest)}: {error.Message}");
         }
+    }
+
+    private static string BuildExpectedQueryParameters(IDictionary<string, string> queryParameters)
+    {
+        return string.Join('&', queryParameters.Select(kv => $"{kv.Key}={kv.Value}").ToList());
     }
 
     private static void BuildMocks(IIoCContainer container,

@@ -6,6 +6,7 @@ using Puffix.IoC;
 using Puffix.IoC.Configuration;
 using System.Globalization;
 using System.Net;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.OpenWeather;
@@ -41,8 +42,15 @@ public class OpenWeatherApiTests
             IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
 
             string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
-            string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
-            
+            //string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
+
+            IDictionary<string, string> queryParameters = new Dictionary<string, string>()
+            {
+                { "lat", Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "lon", Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "units", "metric" }
+            };
+
             IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
             string coreMeteo = await httpRepository.HttpAsync(queryInformation);
 
@@ -82,7 +90,14 @@ public class OpenWeatherApiTests
 
             // Test
             string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
-            string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
+            IDictionary<string, string> queryParameters = new Dictionary<string, string>()
+            {
+                { "lat", Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "lon", Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "units", "metric" }
+            };
+
+            string expectedQueryParameters = BuildExpectedQueryParameters(queryParameters);
 
             IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
             string actualResult = await httpRepository.HttpAsync(queryInformation);
@@ -92,7 +107,7 @@ public class OpenWeatherApiTests
             mockHttpMessageHandlerMock.Protected().Verify(
                 "SendAsync",
                 Times.Between(0, 1, Moq.Range.Inclusive),
-                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.StartsWith(owWeatherApiBaseUri) && req.RequestUri!.AbsoluteUri.EndsWith(queryParameters)),
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.StartsWith(owWeatherApiBaseUri) && req.RequestUri!.AbsoluteUri.EndsWith(expectedQueryParameters)),
                 ItExpr.IsAny<CancellationToken>()
             );
 
@@ -108,6 +123,11 @@ public class OpenWeatherApiTests
         {
             Assert.Fail($"Error while testing {nameof(Test)}: {error.Message}");
         }
+    }
+
+    private static string BuildExpectedQueryParameters(IDictionary<string, string> queryParameters)
+    {
+        return string.Join('&', queryParameters.Select(kv => $"{kv.Key}={kv.Value}").ToList());
     }
 
     private static void BuildMocks(IIoCContainer container,

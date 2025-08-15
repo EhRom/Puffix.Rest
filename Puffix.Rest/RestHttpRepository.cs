@@ -16,9 +16,13 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
         this.httpClientFactory = httpClientFactory;
     }
 
-    public abstract QueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent);
+    public abstract QueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
-    public abstract QueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, string apiUri, string queryPath, string queryParameters, string queryContent);
+    public abstract QueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+
+    public abstract QueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+
+    public abstract QueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
     protected static string BuildUri(string apiUri, string queryPath, string queryParameters)
     {
@@ -57,16 +61,22 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
     {
         using HttpClient httpClient = httpClientFactory.CreateClient(GetType().FullName ?? string.Empty);
 
-        foreach (string headerKey in queryInformation.Headers.Keys)
+        foreach (KeyValuePair<string, IEnumerable<string>> header in queryInformation.Headers)
         {
-            httpClient.DefaultRequestHeaders.Add(headerKey, queryInformation.Headers[headerKey]);
+            if (header.Value.Count() <= 1)
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value.FirstOrDefault());
+            else
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
         }
 
         if (queryInformation.IsHeaderToken)
         {
-            foreach (KeyValuePair<string, string> authHeader in queryInformation.GetAuthenticationHeader())
+            foreach (KeyValuePair<string, IEnumerable<string>> authHeader in queryInformation.GetAuthenticationHeader())
             {
-                httpClient.DefaultRequestHeaders.Add(authHeader.Key, authHeader.Value);
+                if (authHeader.Value.Count() <= 1)
+                    httpClient.DefaultRequestHeaders.Add(authHeader.Key, authHeader.Value.FirstOrDefault());
+                else
+                    httpClient.DefaultRequestHeaders.Add(authHeader.Key, authHeader.Value);
             }
         }
 

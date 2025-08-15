@@ -6,8 +6,13 @@ public class OpenWeatherApiToken(IConfiguration configuration) : IOpenWeatherApi
 {
     private readonly string token = configuration["owapiToken"] ?? string.Empty;
 
-    public string GetQueryParameter()
+    public string GetQueryParameterName()
     {
-        return $"appid={token}";
+        return "appid";
+    }
+
+    public string GetQueryParameterValue()
+    {
+        return token;
     }
 }

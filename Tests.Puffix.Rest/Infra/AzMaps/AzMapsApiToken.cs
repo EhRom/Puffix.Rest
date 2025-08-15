@@ -6,8 +6,13 @@ public class AzMapsApiToken(IConfiguration configuration) : IAzMapsApiToken
 {
     private readonly string token = configuration["azmapsApiToken"] ?? string.Empty;
 
-    public string GetQueryParameter()
+    public string GetQueryParameterName()
     {
-        return $"subscription-key={token}";
+        return "subscription-key";
+    }
+
+    public string GetQueryParameterValue()
+    {
+        return token;
     }
 }
