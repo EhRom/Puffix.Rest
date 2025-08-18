@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Text;
+﻿using System.Text;
 
 namespace Puffix.Rest;
 
