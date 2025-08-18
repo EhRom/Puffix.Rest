@@ -43,6 +43,6 @@ jobs:
       id: test
       run: dotnet test --no-restore --verbosity normal
 
-    # - name: Publish Nuget Package
-    #   id: dotnet-nuget-push
-    #   run: dotnet nuget push /home/runner/work/Puffix.Rest/Puffix.Rest/Puffix.Rest/bin/Release/Puffix.Rest.${{ env.PACKAGE_VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: Publish Nuget Package
+      id: dotnet-nuget-push
+      run: dotnet nuget push /home/runner/work/Puffix.Rest/Puffix.Rest/Puffix.Rest/bin/Release/Puffix.Rest.${{ env.PACKAGE_VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
