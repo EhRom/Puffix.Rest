@@ -17,4 +17,10 @@ public interface IRestHttpRepository<QueryInformationContainerT, TokenT>
     Task<Stream> HttpStreamAsync(QueryInformationContainerT queryInformation);
 
     Task<ResultT> HttpJsonAsync<ResultT>(QueryInformationContainerT queryInformation);
+
+    Task<IResultInformation<string>> HttpWithStatusAsync(QueryInformationContainerT queryInformation);
+
+    Task<IResultInformation<Stream>> HttpStreamWithStatusAsync(QueryInformationContainerT queryInformation);
+
+    Task<IResultInformation<ResultT>> HttpJsonWithStatusAsync<ResultT>(QueryInformationContainerT queryInformation);
 }

@@ -35,15 +35,38 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
 
     public async Task<string> HttpAsync(QueryInformationContainerT queryInformation)
     {
-        return await BaseCallHttpAsync(queryInformation, extracResultAsString);
+        IResultInformation<string> httpCallResult = await BaseCallHttpAsync(queryInformation, extracResultAsString, true);
+        return httpCallResult.ResultContent!;
     }
 
     public async Task<Stream> HttpStreamAsync(QueryInformationContainerT queryInformation)
     {
-        return await BaseCallHttpAsync(queryInformation, extracResultAsStream);
+        IResultInformation<Stream> httpCallResult = await BaseCallHttpAsync(queryInformation, extracResultAsStream, true);
+        return httpCallResult.ResultContent!;
     }
 
     public async Task<ResultT> HttpJsonAsync<ResultT>(QueryInformationContainerT queryInformation)
+    {
+        IResultInformation<ResultT> httpCallResult = await BaseHttpJsonAsync<ResultT>(queryInformation, true);
+        return httpCallResult.ResultContent!;
+    }
+
+    public async Task<IResultInformation<string>> HttpWithStatusAsync(QueryInformationContainerT queryInformation)
+    {
+        return await BaseCallHttpAsync(queryInformation, extracResultAsString, false);
+    }
+
+    public async Task<IResultInformation<Stream>> HttpStreamWithStatusAsync(QueryInformationContainerT queryInformation)
+    {
+        return await BaseCallHttpAsync(queryInformation, extracResultAsStream, false);
+    }
+
+    public async Task<IResultInformation<ResultT>> HttpJsonWithStatusAsync<ResultT>(QueryInformationContainerT queryInformation)
+    {
+        return await BaseHttpJsonAsync<ResultT>(queryInformation, false);
+    }
+
+    private async Task<IResultInformation<ResultT>> BaseHttpJsonAsync<ResultT>(QueryInformationContainerT queryInformation, bool sendErrorOnNotSuccessCode)
     {
         Func<HttpContent, Task<ResultT>> extracJsonResult = async (httpContent) =>
         {
@@ -54,10 +77,10 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
             return result ?? throw new Exception("Error while reading HTTP content or while deserializing.");
         };
 
-        return await BaseCallHttpAsync(queryInformation, extracJsonResult);
+        return await BaseCallHttpAsync(queryInformation, extracJsonResult, sendErrorOnNotSuccessCode);
     }
 
-    private async Task<BaseResultT> BaseCallHttpAsync<BaseResultT>(QueryInformationContainerT queryInformation, Func<HttpContent, Task<BaseResultT>> extractResult)
+    private async Task<IResultInformation<ResultT>> BaseCallHttpAsync<ResultT>(QueryInformationContainerT queryInformation, Func<HttpContent, Task<ResultT>> extractResult, bool sendErrorOnNotSuccessCode)
     {
         using HttpClient httpClient = httpClientFactory.CreateClient(GetType().FullName ?? string.Empty);
 
@@ -82,13 +105,35 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
 
         using HttpResponseMessage response = await HttpCall(httpClient, queryInformation);
 
+        IResultInformation<ResultT> httpCallResult;
         if (!response.IsSuccessStatusCode)
         {
-            string errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Error {response.StatusCode}: {response.ReasonPhrase} >> {errorContent}");
+            if (sendErrorOnNotSuccessCode)
+            {
+                string errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error {response.StatusCode}: {response.ReasonPhrase} >> {errorContent}");
+            }
+            else
+            {
+                httpCallResult = new ResultInformation<ResultT>(
+                    response.StatusCode,
+                    default,
+                    false,
+                    await response.Content.ReadAsStringAsync()
+                );
+            }
+        }
+        else
+        {
+            httpCallResult = new ResultInformation<ResultT>(
+                response.StatusCode,
+                await extractResult(response.Content),
+                true,
+                string.Empty
+            );
         }
 
-        return await extractResult(response.Content);
+        return httpCallResult;
     }
 
     private async Task<HttpResponseMessage> HttpCall(HttpClient httpClient, QueryInformationContainerT queryInformation)

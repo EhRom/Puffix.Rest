@@ -100,7 +100,7 @@ public class OvhApiTests
 
             // Test
             IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
-            //string actualResult = await httpRepository.HttpAsync(queryInformation);
+            
             long[] actualResult = await httpRepository.HttpJsonAsync<long[]>(queryInformation);
 
             // Check calls
@@ -118,6 +118,69 @@ public class OvhApiTests
                 Assert.That(actualResult, Is.Not.Null);
                 Assert.That(actualResult, Is.Not.Empty);
                 Assert.That(actualResult, Is.EqualTo(expextedResponse));
+            });
+        }
+        catch (Exception error)
+        {
+            Assert.Fail($"Error while testing {nameof(UnitTest)}: {error.Message}");
+        }
+    }
+
+    [Test]
+    public async Task UnitTestWithError()
+    {
+        const string baseUri = "https://eu.api.ovh.com/1.0";
+        const string logsUriPath = "me/api/logs/self";
+        try
+        {
+            BuildMocks(container, out IOvhApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOvhApiHttpRepository httpRepository);
+
+            // Register HTTP Calls
+            using HttpContent expectedHttpContent = new StringContent(sampleErrorResponse, Encoding.UTF8, "text/plain");
+
+            Mock<HttpMessageHandler> mockHttpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Content = expectedHttpContent
+                });
+
+            using HttpClient httpClient = new HttpClient(mockHttpMessageHandlerMock.Object);
+
+            httpClientFactoryMock.Setup(httpClientFactory => httpClientFactory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            Exception? caughtError = null;
+
+            // Test
+            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            try
+            {
+                await httpRepository.HttpJsonAsync<long[]>(queryInformation);
+
+                Assert.Fail("An error was expected");
+            }
+            catch (Exception error)
+            {
+                caughtError = error;
+            }
+
+            // Check calls
+            httpClientFactoryMock.Verify(httpClientFactory => httpClientFactory.CreateClient(It.IsAny<string>()), Times.Once());
+            mockHttpMessageHandlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Between(0, 1, Moq.Range.Inclusive),
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri!.AbsoluteUri.Equals($"{baseUri}/{logsUriPath}")),
+                ItExpr.IsAny<CancellationToken>()
+            );
+
+            // Check result
+            Assert.Multiple(() =>
+            {
+                Assert.That(caughtError, Is.Not.Null);
+                Assert.That(caughtError!.Message, Is.EqualTo(expectedErrorResponse));
             });
         }
         catch (Exception error)
@@ -146,4 +209,7 @@ public class OvhApiTests
 
     private const string sampleResponse = @"[1,2,3,4,5]";
     private static readonly long[] expextedResponse = [1, 2, 3, 4, 5];
+
+    private const string sampleErrorResponse = "Invalid key";
+    private const string expectedErrorResponse = "Error Unauthorized: Unauthorized >> Invalid key";
 }
