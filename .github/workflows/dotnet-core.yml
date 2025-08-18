@@ -31,11 +31,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    # - name: Install dependencies
-    #   run: dotnet restore
+    - name: Install dependencies
+      id: dotnet-restore
+      run: dotnet restore
 
     - name: Build
-      id: build
+      id: dotnet-build
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
@@ -43,5 +44,5 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
 
     # - name: Publish Nuget Package
-    #   id: publish
+    #   id: dotnet-nuget-push
     #   run: dotnet nuget push /home/runner/work/Puffix.Rest/Puffix.Rest/Puffix.Rest/bin/Release/Puffix.Rest.${{ env.PACKAGE_VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
