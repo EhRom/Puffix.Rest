@@ -25,7 +25,7 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
         string processedQueryParameter = BuildQueryParameters();
         string uriWithPath = BuildUriWithPath();
 
-        string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter}";
+        string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter.Trim('?')}";
 
         return new Uri(completeUri);
     }
@@ -64,9 +64,7 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
             queryParameterBuilder.Append($"{parameterKey}={queryParameters[parameterKey]}");
         }
 
-        return queryParameterBuilder.Length > 0 ?
-                    $"?{queryParameterBuilder}"
-                    : string.Empty;
+        return queryParameterBuilder.ToString();
     }
 
     public virtual HttpContent GetQueryContent()
