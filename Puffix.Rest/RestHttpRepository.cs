@@ -116,6 +116,7 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
             else
             {
                 httpCallResult = new ResultInformation<ResultT>(
+                    ResultInformation<ResultT>.ExtractHttpHeaders(response.Headers),
                     response.StatusCode,
                     default,
                     false,
@@ -126,6 +127,7 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
         else
         {
             httpCallResult = new ResultInformation<ResultT>(
+                ResultInformation<ResultT>.ExtractHttpHeaders(response.Headers),
                 response.StatusCode,
                 await extractResult(response.Content),
                 true,
