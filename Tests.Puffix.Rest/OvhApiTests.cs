@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Moq.Protected;
 using Moq;
+using Moq.Protected;
 using Puffix.IoC;
 using Puffix.IoC.Configuration;
 using System.Net;
 using System.Text;
 using Tests.Puffix.Rest.Infra;
-using Tests.Puffix.Rest.Infra.AzMaps;
 using Tests.Puffix.Rest.Infra.Ovh;
 
 namespace Tests.Puffix.Rest;

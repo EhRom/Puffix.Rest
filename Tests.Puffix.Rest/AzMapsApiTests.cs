@@ -3,7 +3,6 @@ using Moq;
 using Moq.Protected;
 using Puffix.IoC;
 using Puffix.IoC.Configuration;
-using System.Globalization;
 using System.Net;
 using System.Text;
 using Tests.Puffix.Rest.Infra;

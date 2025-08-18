@@ -4,9 +4,9 @@ using Moq.Protected;
 using NUnit.Framework.Internal;
 using Puffix.IoC;
 using Puffix.IoC.Configuration;
+using Puffix.Rest;
 using System.Globalization;
 using System.Net;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.OpenWeather;
@@ -33,7 +33,7 @@ public class OpenWeatherApiTests
         container = IoCContainer.CreateNew(configuration);
     }
 
-    //[Test] // > Sample method, only for local use
+    [Test] // > Sample method, only for local use
     public async Task LoadLocationsTest()
     {
         try
@@ -42,8 +42,6 @@ public class OpenWeatherApiTests
             IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
 
             string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
-            //string queryParameters = $"lat={Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&lon={Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat)}&units=metric";
-
             IDictionary<string, string> queryParameters = new Dictionary<string, string>()
             {
                 { "lat", Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
@@ -52,11 +50,44 @@ public class OpenWeatherApiTests
             };
 
             IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
-            string coreMeteo = await httpRepository.HttpAsync(queryInformation);
+            string actualResult = await httpRepository.HttpAsync(queryInformation);
 
-            Assert.That(coreMeteo, Is.Not.Null);
-            Assert.That(coreMeteo, Is.Not.Empty);
-            Assert.That(coreMeteo.Contains($@"""name"":""{LocationName}"",""cod"":200"), Is.True);
+            Assert.That(actualResult, Is.Not.Null);
+            Assert.That(actualResult, Is.Not.Empty);
+            Assert.That(actualResult, Does.Contain($@"""name"":""{LocationName}"",""cod"":200"));
+        }
+        catch (Exception error)
+        {
+            Assert.Fail(error.Message);
+        }
+    }
+
+    [Test] // > Sample method, only for local use
+    public async Task LoadLocationsWithStatusTest()
+    {
+        try
+        {
+            IOpenWeatherApiToken token = container.Resolve<IOpenWeatherApiToken>();
+            IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
+
+            string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
+            IDictionary<string, string> queryParameters = new Dictionary<string, string>()
+            {
+                { "lat", Latitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "lon", Longitude.ToString(CultureInfo.InvariantCulture.NumberFormat) },
+                { "units", "metric" }
+            };
+
+            IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
+            IResultInformation<string> actualResult = await httpRepository.HttpWithStatusAsync(queryInformation);
+
+            Assert.That(actualResult, Is.Not.Null);
+            Assert.That(actualResult.IsSuccess, Is.True);
+            Assert.That(actualResult.ResultContent, Is.Not.Null);
+            Assert.That(actualResult.ResultContent, Is.Not.Empty);
+            Assert.That(actualResult.ResultContent, Does.Contain($@"""name"":""{LocationName}"",""cod"":200"));
+            Assert.That(actualResult.ErrorContent, Is.Empty.Or.Null);
+            Assert.That(actualResult.ResultCode, Is.EqualTo(HttpStatusCode.OK));
         }
         catch (Exception error)
         {
