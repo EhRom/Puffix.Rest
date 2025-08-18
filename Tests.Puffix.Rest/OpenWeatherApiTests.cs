@@ -33,7 +33,7 @@ public class OpenWeatherApiTests
         container = IoCContainer.CreateNew(configuration);
     }
 
-    [Test] // > Sample method, only for local use
+    //[Test] // > Sample method, only for local use
     public async Task LoadLocationsTest()
     {
         try
@@ -62,7 +62,7 @@ public class OpenWeatherApiTests
         }
     }
 
-    [Test] // > Sample method, only for local use
+    //[Test] // > Sample method, only for local use
     public async Task LoadLocationsWithStatusTest()
     {
         try
