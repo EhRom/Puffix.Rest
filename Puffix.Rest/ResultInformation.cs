@@ -26,4 +26,15 @@ public class ResultInformation<ResultT>(IDictionary<string, IEnumerable<string>>
 
         return extractedHeaders;
     }
+
+    public override string ToString()
+    {
+        string content = IsSuccess ?
+                (ResultContent is null ? "No content" : $"{ResultContent}") :
+                ErrorContent;
+
+        content = (content ?? string.Empty).Substring(0, 50);
+
+        return $"{nameof(ResultInformation<ResultT>)}--{ResultCode}-{IsSuccess}>{content}";
+    }
 }

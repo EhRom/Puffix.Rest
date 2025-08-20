@@ -31,9 +31,14 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
     protected virtual string BuildUriWithPath()
     {
+        return BuildUriWithPath(false);
+    }
+
+    private string BuildUriWithPath(bool skipToken)
+    {
         string builtUri = baseUri.TrimEnd('/');
 
-        string builtQueryPath = (Token is not null && Token is IQueryPathToken) ?
+        string builtQueryPath = (!skipToken && Token is not null && Token is IQueryPathToken) ?
                                             (Token as IQueryPathToken)!.GetQueryPath() :
                                             string.Empty;
 
@@ -50,8 +55,13 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
     protected virtual string BuildQueryParameters()
     {
+        return BuildQueryParameters(false);
+    }
+
+    private string BuildQueryParameters(bool skipToken)
+    {
         StringBuilder queryParameterBuilder = new StringBuilder();
-        if (Token is not null && Token is IQueryParameterToken)
+        if (!skipToken && Token is not null && Token is IQueryParameterToken)
             queryParameterBuilder.Append($"{(Token as IQueryParameterToken)!.GetQueryParameterName()}={(Token as IQueryParameterToken)!.GetQueryParameterValue()}");
 
 
@@ -74,5 +84,15 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
     public virtual IDictionary<string, IEnumerable<string>> GetAuthenticationHeader()
     {
         return IsHeaderToken ? (Token as IHeaderToken)!.GetHeaders() : new Dictionary<string, IEnumerable<string>>();
+    }
+
+    public override string ToString()
+    {
+        string processedQueryParameter = BuildQueryParameters(true);
+        string uriWithPath = BuildUriWithPath(true);
+
+        string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter.Trim('?')}";
+
+        return $"{nameof(QueryInformation<TokenT>)}--{httpMethod}--{completeUri}";
     }
 }
