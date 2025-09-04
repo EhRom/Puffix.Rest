@@ -1,4 +1,4 @@
-# Puffix REST
+f# Puffix REST
 
 Library to handle REST API in your project.
 
@@ -117,14 +117,14 @@ public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? t
     QueryInformation<ISampleApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
     ISampleApiQueryInformation
 {
-    public static ISampleApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    public static ISampleApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
-        return new SampleApiQueryInformation(httpMethod, default, new Dictionary<string, string>(), apiUri, queryPath, queryParameters, queryContent);
+        return new SampleApiQueryInformation(httpMethod, default, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 
-    public static ISampleApiQueryInformation  CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    public static ISampleApiQueryInformation  CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
-        return new SampleApiQueryInformation(httpMethod, token, new Dictionary<string, string>(), apiUri, queryPath, queryParameters, queryContent);
+        return new OpenWeatherApiQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 }
 ```
@@ -161,13 +161,13 @@ public class SampleApiHttpRepository(IHttpClientFactory httpClientFactory) :
         return SampleApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 
-    public override ISampleApiQueryInformation BuildAuthenticatedQuery(IAzMapsApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
         IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
         return SampleApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 
-    public override ISampleApiQueryInformation BuildAuthenticatedQuery(IAzMapsApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+    public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
         return SampleApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
     }
