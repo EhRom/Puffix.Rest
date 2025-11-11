@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -21,9 +21,9 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Title>Puffix Rest API</Title>
 		<PackageTags>IoC Puffix</PackageTags>
-		<AssemblyVersion>3.4.2.0</AssemblyVersion>
-		<FileVersion>3.4.2.0</FileVersion>
-		<Version>3.4.2</Version>
+		<AssemblyVersion>10.0.0.0</AssemblyVersion>
+		<FileVersion>10.0.0.0</FileVersion>
+		<Version>10.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -42,7 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
 	</ItemGroup>
 
 </Project>

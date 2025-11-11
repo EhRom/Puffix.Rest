@@ -1,4 +1,4 @@
-name: Build and pusblish
+name: Build & Publidh .NET Package
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
       - '.github/workflows/*.yml'
 
 env:
-  DOTNET_VERSION: '9.0.x'
-  PACKAGE_VERSION: 3.4.2
+  DOTNET_VERSION: '10.0.x'
+  PACKAGE_VERSION: 10.0.0
 
 jobs:
   build:
@@ -21,13 +21,13 @@ jobs:
     steps:
     - name: Checkout
       id: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
     - name: Setup .NET Core
-      id: install-dotnet
-      uses: actions/setup-dotnet@v4
+      id: setup-dotnet
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -40,7 +40,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Test
-      id: test
+      id: dotnet-test
       run: dotnet test --no-restore --verbosity normal
 
     - name: Publish Nuget Package

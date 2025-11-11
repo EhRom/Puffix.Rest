@@ -124,7 +124,7 @@ public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? t
 
     public static ISampleApiQueryInformation  CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
     {
-        return new OpenWeatherApiQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
+        return new SampleApiQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
     }
 }
 ```
