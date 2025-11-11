@@ -28,7 +28,7 @@
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
     <PackageReference Include="Polly" Version="8.6.4" />
-    <PackageReference Include="Puffix.IoC.Configuration" Version="3.3.2" />
+    <PackageReference Include="Puffix.IoC.Configuration" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
