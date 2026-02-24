@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.Ovh;
 
 public class OvhApiQueryInformation(HttpMethod httpMethod, IOvhApiToken? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
-    QueryInformation<IOvhApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
+    BasicQueryInformation<IOvhApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
     IOvhApiQueryInformation
 {
     public static IOvhApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)

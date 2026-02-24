@@ -2,4 +2,4 @@
 
 namespace Tests.Puffix.Rest.Infra.Ovh;
 
-public interface IOvhApiHttpRepository : IRestHttpRepository<IOvhApiQueryInformation, IOvhApiToken> { }
+public interface IOvhApiHttpRepository : IBasicRestHttpRepository<IOvhApiQueryInformation, IOvhApiToken> { }

@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.OpenWeather;
 
 public class OpenWeatherApiQueryInformation(HttpMethod httpMethod, IOpenWeatherApiToken? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
-    QueryInformation<IOpenWeatherApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
+    BasicQueryInformation<IOpenWeatherApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
     IOpenWeatherApiQueryInformation
 {
     public static IOpenWeatherApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)

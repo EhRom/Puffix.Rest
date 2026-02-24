@@ -2,8 +2,8 @@
 
 namespace Puffix.Rest;
 
-public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
-    IQueryInformation<TokenT>
+public abstract class BasicQueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
+    IBasicQueryInformation<TokenT>
         where TokenT : IToken
 {
     protected readonly string baseUri = baseUri;
@@ -93,6 +93,6 @@ public abstract class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? to
 
         string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter.Trim('?')}";
 
-        return $"{nameof(QueryInformation<TokenT>)}--{httpMethod}--{completeUri}";
+        return $"{nameof(BasicQueryInformation<TokenT>)}--{httpMethod}--{completeUri}";
     }
 }

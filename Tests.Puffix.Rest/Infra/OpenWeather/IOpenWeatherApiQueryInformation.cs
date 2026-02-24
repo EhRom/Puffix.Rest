@@ -2,4 +2,4 @@
 
 namespace Tests.Puffix.Rest.Infra.OpenWeather;
 
-public interface IOpenWeatherApiQueryInformation : IQueryInformation<IOpenWeatherApiToken> { }
+public interface IOpenWeatherApiQueryInformation : IBasicQueryInformation<IOpenWeatherApiToken> { }

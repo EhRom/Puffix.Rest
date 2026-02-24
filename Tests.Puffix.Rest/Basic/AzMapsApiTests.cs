@@ -8,7 +8,7 @@ using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.AzMaps;
 
-namespace Tests.Puffix.Rest;
+namespace Tests.Puffix.Rest.Basic;
 
 public class AzMapsApiTests
 {

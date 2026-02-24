@@ -1,6 +1,6 @@
 ﻿namespace Puffix.Rest;
 
-public interface IQueryInformation<TokenT>
+public interface IBasicQueryInformation<TokenT>
     where TokenT : IToken
 {
     HttpMethod QuerytHttpMethod { get; }

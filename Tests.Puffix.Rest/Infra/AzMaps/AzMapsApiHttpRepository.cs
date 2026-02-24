@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.AzMaps;
 
 public class AzMapsApiHttpRepository(IHttpClientFactory httpClientFactory) :
-    RestHttpRepository<IAzMapsApiQueryInformation, IAzMapsApiToken>(httpClientFactory),
+    BasicRestHttpRepository<IAzMapsApiQueryInformation, IAzMapsApiToken>(httpClientFactory),
     IAzMapsApiHttpRepository
 {
     public override IAzMapsApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)

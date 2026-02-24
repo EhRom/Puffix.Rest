@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.OpenWeather;
 
 public class OpenWeatherApiHttpRepository(IHttpClientFactory httpClientFactory) :
-    RestHttpRepository<IOpenWeatherApiQueryInformation, IOpenWeatherApiToken>(httpClientFactory),
+    BasicRestHttpRepository<IOpenWeatherApiQueryInformation, IOpenWeatherApiToken>(httpClientFactory),
     IOpenWeatherApiHttpRepository
 {
     public override IOpenWeatherApiQueryInformation BuildAuthenticatedQuery(IOpenWeatherApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)

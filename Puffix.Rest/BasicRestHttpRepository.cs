@@ -2,8 +2,8 @@
 
 namespace Puffix.Rest;
 
-public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : IRestHttpRepository<QueryInformationContainerT, TokenT>
-    where QueryInformationContainerT : IQueryInformation<TokenT>
+public abstract class BasicRestHttpRepository<BasicQueryInformationContainerT, TokenT> : IBasicRestHttpRepository<BasicQueryInformationContainerT, TokenT>
+    where BasicQueryInformationContainerT : IBasicQueryInformation<TokenT>
     where TokenT : IToken
 {
     private static readonly Func<HttpContent, Task<string>> extracResultAsString = async (httpContent) => await httpContent.ReadAsStringAsync();
@@ -11,18 +11,18 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
 
     protected readonly IHttpClientFactory httpClientFactory;
 
-    public RestHttpRepository(IHttpClientFactory httpClientFactory)
+    public BasicRestHttpRepository(IHttpClientFactory httpClientFactory)
     {
         this.httpClientFactory = httpClientFactory;
     }
 
-    public abstract QueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+    public abstract BasicQueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
-    public abstract QueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+    public abstract BasicQueryInformationContainerT BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
-    public abstract QueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+    public abstract BasicQueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
-    public abstract QueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
+    public abstract BasicQueryInformationContainerT BuildAuthenticatedQuery(TokenT token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent);
 
     protected static string BuildUri(string apiUri, string queryPath, string queryParameters)
     {
@@ -33,40 +33,40 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
         return builtUri;
     }
 
-    public async Task<string> HttpAsync(QueryInformationContainerT queryInformation)
+    public async Task<string> HttpAsync(BasicQueryInformationContainerT queryInformation)
     {
         IResultInformation<string> httpCallResult = await BaseCallHttpAsync(queryInformation, extracResultAsString, true);
         return httpCallResult.ResultContent!;
     }
 
-    public async Task<Stream> HttpStreamAsync(QueryInformationContainerT queryInformation)
+    public async Task<Stream> HttpStreamAsync(BasicQueryInformationContainerT queryInformation)
     {
         IResultInformation<Stream> httpCallResult = await BaseCallHttpAsync(queryInformation, extracResultAsStream, true);
         return httpCallResult.ResultContent!;
     }
 
-    public async Task<ResultT> HttpJsonAsync<ResultT>(QueryInformationContainerT queryInformation)
+    public async Task<ResultT> HttpJsonAsync<ResultT>(BasicQueryInformationContainerT queryInformation)
     {
         IResultInformation<ResultT> httpCallResult = await BaseHttpJsonAsync<ResultT>(queryInformation, true);
         return httpCallResult.ResultContent!;
     }
 
-    public async Task<IResultInformation<string>> HttpWithStatusAsync(QueryInformationContainerT queryInformation)
+    public async Task<IResultInformation<string>> HttpWithStatusAsync(BasicQueryInformationContainerT queryInformation)
     {
         return await BaseCallHttpAsync(queryInformation, extracResultAsString, false);
     }
 
-    public async Task<IResultInformation<Stream>> HttpStreamWithStatusAsync(QueryInformationContainerT queryInformation)
+    public async Task<IResultInformation<Stream>> HttpStreamWithStatusAsync(BasicQueryInformationContainerT queryInformation)
     {
         return await BaseCallHttpAsync(queryInformation, extracResultAsStream, false);
     }
 
-    public async Task<IResultInformation<ResultT>> HttpJsonWithStatusAsync<ResultT>(QueryInformationContainerT queryInformation)
+    public async Task<IResultInformation<ResultT>> HttpJsonWithStatusAsync<ResultT>(BasicQueryInformationContainerT queryInformation)
     {
         return await BaseHttpJsonAsync<ResultT>(queryInformation, false);
     }
 
-    private async Task<IResultInformation<ResultT>> BaseHttpJsonAsync<ResultT>(QueryInformationContainerT queryInformation, bool sendErrorOnNotSuccessCode)
+    private async Task<IResultInformation<ResultT>> BaseHttpJsonAsync<ResultT>(BasicQueryInformationContainerT queryInformation, bool sendErrorOnNotSuccessCode)
     {
         Func<HttpContent, Task<ResultT>> extracJsonResult = async (httpContent) =>
         {
@@ -80,7 +80,7 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
         return await BaseCallHttpAsync(queryInformation, extracJsonResult, sendErrorOnNotSuccessCode);
     }
 
-    private async Task<IResultInformation<ResultT>> BaseCallHttpAsync<ResultT>(QueryInformationContainerT queryInformation, Func<HttpContent, Task<ResultT>> extractResult, bool sendErrorOnNotSuccessCode)
+    private async Task<IResultInformation<ResultT>> BaseCallHttpAsync<ResultT>(BasicQueryInformationContainerT queryInformation, Func<HttpContent, Task<ResultT>> extractResult, bool sendErrorOnNotSuccessCode)
     {
         using HttpClient httpClient = httpClientFactory.CreateClient(GetType().FullName ?? string.Empty);
 
@@ -138,7 +138,7 @@ public abstract class RestHttpRepository<QueryInformationContainerT, TokenT> : I
         return httpCallResult;
     }
 
-    private async Task<HttpResponseMessage> HttpCall(HttpClient httpClient, QueryInformationContainerT queryInformation)
+    private async Task<HttpResponseMessage> HttpCall(HttpClient httpClient, BasicQueryInformationContainerT queryInformation)
     {
         Task<HttpResponseMessage> responseMessageTask;
         if (queryInformation.QuerytHttpMethod == HttpMethod.Get)

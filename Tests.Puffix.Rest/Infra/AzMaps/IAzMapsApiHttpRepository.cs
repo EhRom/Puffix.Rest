@@ -2,4 +2,4 @@
 
 namespace Tests.Puffix.Rest.Infra.AzMaps;
 
-public interface IAzMapsApiHttpRepository : IRestHttpRepository<IAzMapsApiQueryInformation, IAzMapsApiToken> { }
+public interface IAzMapsApiHttpRepository : IBasicRestHttpRepository<IAzMapsApiQueryInformation, IAzMapsApiToken> { }

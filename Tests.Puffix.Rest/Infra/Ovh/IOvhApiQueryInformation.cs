@@ -2,7 +2,7 @@
 
 namespace Tests.Puffix.Rest.Infra.Ovh;
 
-public interface IOvhApiQueryInformation : IQueryInformation<IOvhApiToken>
+public interface IOvhApiQueryInformation : IBasicQueryInformation<IOvhApiToken>
 {
     public static IDictionary<string, string> EmptyQueryParameters = new Dictionary<string, string>();
 }

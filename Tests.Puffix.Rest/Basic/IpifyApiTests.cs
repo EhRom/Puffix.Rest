@@ -10,7 +10,7 @@ using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.Ipify;
 
-namespace Tests.Puffix.Rest;
+namespace Tests.Puffix.Rest.Basic;
 
 public class IpifyApiTests
 {

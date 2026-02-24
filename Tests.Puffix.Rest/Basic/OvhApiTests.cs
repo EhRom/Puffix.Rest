@@ -8,7 +8,7 @@ using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.Ovh;
 
-namespace Tests.Puffix.Rest;
+namespace Tests.Puffix.Rest.Basic;
 
 public class OvhApiTests
 {

@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.Ovh;
 
 public class OvhApiHttpRepository(IHttpClientFactory httpClientFactory) :
-    RestHttpRepository<IOvhApiQueryInformation, IOvhApiToken>(httpClientFactory),
+    BasicRestHttpRepository<IOvhApiQueryInformation, IOvhApiToken>(httpClientFactory),
     IOvhApiHttpRepository
 {
     public override IOvhApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)

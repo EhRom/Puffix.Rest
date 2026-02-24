@@ -3,7 +3,7 @@
 namespace Tests.Puffix.Rest.Infra.Ipify;
 
 public class IpifyApiHttpRepository(IHttpClientFactory httpClientFactory) :
-    RestHttpRepository<IIpifyApiQueryInformation, IIpifyApiToken>(httpClientFactory),
+    BasicRestHttpRepository<IIpifyApiQueryInformation, IIpifyApiToken>(httpClientFactory),
     IIpifyApiHttpRepository
 {
     public override IIpifyApiQueryInformation BuildAuthenticatedQuery(IIpifyApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
