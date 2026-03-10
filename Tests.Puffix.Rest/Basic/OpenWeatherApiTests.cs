@@ -39,7 +39,7 @@ public class OpenWeatherApiTests
         try
         {
             IOpenWeatherApiToken token = container.Resolve<IOpenWeatherApiToken>();
-            IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
+            IOpenWeatherApiBasicHttpRepository httpRepository = container.Resolve<IOpenWeatherApiBasicHttpRepository>();
 
             string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
             IDictionary<string, string> queryParameters = new Dictionary<string, string>()
@@ -49,7 +49,7 @@ public class OpenWeatherApiTests
                 { "units", "metric" }
             };
 
-            IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
+            IOpenWeatherApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
             string actualResult = await httpRepository.HttpAsync(queryInformation);
 
             Assert.That(actualResult, Is.Not.Null);
@@ -68,7 +68,7 @@ public class OpenWeatherApiTests
         try
         {
             IOpenWeatherApiToken token = container.Resolve<IOpenWeatherApiToken>();
-            IOpenWeatherApiHttpRepository httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>();
+            IOpenWeatherApiBasicHttpRepository httpRepository = container.Resolve<IOpenWeatherApiBasicHttpRepository>();
 
             string owWeatherApiBaseUri = (container.Configuration[nameof(owWeatherApiBaseUri)] ?? string.Empty).TrimEnd('/');
             IDictionary<string, string> queryParameters = new Dictionary<string, string>()
@@ -78,7 +78,7 @@ public class OpenWeatherApiTests
                 { "units", "metric" }
             };
 
-            IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
+            IOpenWeatherApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
             IResultInformation<string> actualResult = await httpRepository.HttpWithStatusAsync(queryInformation);
 
             Assert.That(actualResult, Is.Not.Null);
@@ -100,7 +100,7 @@ public class OpenWeatherApiTests
     {
         try
         {
-            BuildMocks(container, out IOpenWeatherApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOpenWeatherApiHttpRepository httpRepository);
+            BuildMocks(container, out IOpenWeatherApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOpenWeatherApiBasicHttpRepository httpRepository);
 
             // Register HTTP Calls
             using HttpContent expectedHttpContent = new StringContent(sampleResponse ?? string.Empty, Encoding.UTF8, "application/json");
@@ -130,7 +130,7 @@ public class OpenWeatherApiTests
 
             string expectedQueryParameters = BuildExpectedQueryParameters(queryParameters);
 
-            IOpenWeatherApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
+            IOpenWeatherApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, owWeatherApiBaseUri, string.Empty, queryParameters, string.Empty);
             string actualResult = await httpRepository.HttpAsync(queryInformation);
 
             // Check calls
@@ -164,7 +164,7 @@ public class OpenWeatherApiTests
     private static void BuildMocks(IIoCContainer container,
         out IOpenWeatherApiToken token,
         out Mock<IHttpClientFactory> httpClientFactoryMock,
-        out IOpenWeatherApiHttpRepository httpRepository
+        out IOpenWeatherApiBasicHttpRepository httpRepository
     )
     {
         // Create authentication token.
@@ -173,7 +173,7 @@ public class OpenWeatherApiTests
         // Build HTTP repository and HTTP client factory mock
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
 
-        httpRepository = container.Resolve<IOpenWeatherApiHttpRepository>
+        httpRepository = container.Resolve<IOpenWeatherApiBasicHttpRepository>
         (
             IoCNamedParameter.CreateNew("httpClientFactory", httpClientFactoryMock.Object)
         );

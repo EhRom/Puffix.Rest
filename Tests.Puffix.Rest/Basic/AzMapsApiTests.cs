@@ -35,7 +35,7 @@ public class AzMapsApiTests
         try
         {
             IAzMapsApiToken token = container.Resolve<IAzMapsApiToken>();
-            IAzMapsApiHttpRepository httpRepository = container.Resolve<IAzMapsApiHttpRepository>();
+            IAzMapsApiBasicHttpRepository httpRepository = container.Resolve<IAzMapsApiBasicHttpRepository>();
 
             IDictionary<string, string> queryParameters = new Dictionary<string, string>()
             {
@@ -44,7 +44,7 @@ public class AzMapsApiTests
                 { "query", "Villeurbanne" }
             };
 
-            IAzMapsApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, azMapsBaseUri, azMapsSearchAddressQeuryPath, queryParameters, string.Empty);
+            IAzMapsApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, azMapsBaseUri, azMapsSearchAddressQeuryPath, queryParameters, string.Empty);
 
             string actualResult = await httpRepository.HttpAsync(queryInformation);
 
@@ -73,7 +73,7 @@ public class AzMapsApiTests
             };
             string expectedQueryParameters = BuildExpectedQueryParameters(queryParameters);
 
-            BuildMocks(container, out IAzMapsApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IAzMapsApiHttpRepository httpRepository);
+            BuildMocks(container, out IAzMapsApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IAzMapsApiBasicHttpRepository httpRepository);
 
             // Register HTTP Calls
             using HttpContent expectedHttpContent = new StringContent(sampleResponse ?? string.Empty, Encoding.UTF8, "application/json");
@@ -93,7 +93,7 @@ public class AzMapsApiTests
                 .Returns(httpClient);
 
             // Test
-            IAzMapsApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, azMapsBaseUri, azMapsSearchAddressQueryPath, queryParameters, string.Empty);
+            IAzMapsApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, azMapsBaseUri, azMapsSearchAddressQueryPath, queryParameters, string.Empty);
             string actualResult = await httpRepository.HttpAsync(queryInformation);
 
             // Check calls
@@ -127,7 +127,7 @@ public class AzMapsApiTests
     private static void BuildMocks(IIoCContainer container,
         out IAzMapsApiToken token,
         out Mock<IHttpClientFactory> httpClientFactoryMock,
-        out IAzMapsApiHttpRepository httpRepository
+        out IAzMapsApiBasicHttpRepository httpRepository
     )
     {
         // Create authentication token.
@@ -136,7 +136,7 @@ public class AzMapsApiTests
         // Build HTTP repository and HTTP client factory mock
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
 
-        httpRepository = container.Resolve<IAzMapsApiHttpRepository>
+        httpRepository = container.Resolve<IAzMapsApiBasicHttpRepository>
         (
             IoCNamedParameter.CreateNew("httpClientFactory", httpClientFactoryMock.Object)
         );
