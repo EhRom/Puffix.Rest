@@ -1,4 +1,6 @@
-﻿namespace Puffix.Rest;
+﻿using Puffix.Rest.Base;
+
+namespace Puffix.Rest;
 
 public abstract class BasicRestHttpRepository<QueryInformationContainerT, TokenT>(IHttpClientFactory httpClientFactory) :
     BaseRestHttpRepository<QueryInformationContainerT, TokenT, string>(httpClientFactory),

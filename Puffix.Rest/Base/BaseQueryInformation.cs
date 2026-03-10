@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Puffix.Rest;
+namespace Puffix.Rest.Base;
 
 public class BaseQueryInformation<TokenT, QueryContentT>(HttpMethod httpMethod, TokenT? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, QueryContentT queryContent) :
     IQueryInformation<TokenT>

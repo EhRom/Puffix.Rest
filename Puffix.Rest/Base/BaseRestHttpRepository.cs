@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Puffix.Rest;
+namespace Puffix.Rest.Base;
 
 public abstract class BaseRestHttpRepository<QueryInformationContainerT, TokenT, QueryContentT>(IHttpClientFactory httpClientFactory) : IBaseRestHttpRepository<QueryInformationContainerT, TokenT, QueryContentT>
     where QueryInformationContainerT : IQueryInformation<TokenT>

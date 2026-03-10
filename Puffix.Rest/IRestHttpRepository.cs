@@ -1,4 +1,6 @@
-﻿namespace Puffix.Rest;
+﻿using Puffix.Rest.Base;
+
+namespace Puffix.Rest;
 
 public interface IRestHttpRepository<QueryInformationContainerT, TokenT> : IBaseRestHttpRepository<QueryInformationContainerT, TokenT, IQueryContent>
     where QueryInformationContainerT : IQueryInformation<TokenT>

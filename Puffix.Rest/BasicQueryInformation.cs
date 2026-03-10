@@ -1,5 +1,6 @@
 ﻿//using System.Text;
 
+using Puffix.Rest.Base;
 using System.Text;
 
 namespace Puffix.Rest;
