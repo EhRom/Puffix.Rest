@@ -37,20 +37,20 @@ public class OvhApiTests
         try
         {
             IOvhApiToken token = container.Resolve<IOvhApiToken>();
-            IOvhApiHttpRepository httpRepository = container.Resolve<IOvhApiHttpRepository>();
+            IOvhApiBasicHttpRepository httpRepository = container.Resolve<IOvhApiBasicHttpRepository>();
 
-            IOvhApiQueryInformation authQueryInformation = httpRepository.BuildUnauthenticatedQuery(HttpMethod.Get, baseUri, authenticationUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation authQueryInformation = httpRepository.BuildUnauthenticatedQuery(HttpMethod.Get, baseUri, authenticationUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             string referenceUnixTime = await httpRepository.HttpAsync(authQueryInformation);
             token.SetReferenceUnixTime(referenceUnixTime);
 
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, accountUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             string result = await httpRepository.HttpAsync(queryInformation);
 
-            IOvhApiQueryInformation queryInformationBis = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation queryInformationBis = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             long[] resultBis = await httpRepository.HttpJsonAsync<long[]>(queryInformationBis);
 
             string logUriPath = resultBis.Any() ? $"{logsUriPath}/{resultBis.First()}" : logsUriPath;
-            IOvhApiQueryInformation queryInformationTer = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation queryInformationTer = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             string resultTer = await httpRepository.HttpAsync(queryInformationTer);
 
             Assert.Multiple(() =>
@@ -78,7 +78,7 @@ public class OvhApiTests
         const string logsUriPath = "me/api/logs/self";
         try
         {
-            BuildMocks(container, out IOvhApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOvhApiHttpRepository httpRepository);
+            BuildMocks(container, out IOvhApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOvhApiBasicHttpRepository httpRepository);
 
             // Register HTTP Calls
             using HttpContent expectedHttpContent = new StringContent(sampleResponse ?? string.Empty, Encoding.UTF8, "application/json");
@@ -98,7 +98,7 @@ public class OvhApiTests
                 .Returns(httpClient);
 
             // Test
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             
             long[] actualResult = await httpRepository.HttpJsonAsync<long[]>(queryInformation);
 
@@ -132,7 +132,7 @@ public class OvhApiTests
         const string logsUriPath = "me/api/logs/self";
         try
         {
-            BuildMocks(container, out IOvhApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOvhApiHttpRepository httpRepository);
+            BuildMocks(container, out IOvhApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IOvhApiBasicHttpRepository httpRepository);
 
             // Register HTTP Calls
             using HttpContent expectedHttpContent = new StringContent(sampleErrorResponse, Encoding.UTF8, "text/plain");
@@ -154,7 +154,7 @@ public class OvhApiTests
             Exception? caughtError = null;
 
             // Test
-            IOvhApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiQueryInformation.EmptyQueryParameters, string.Empty);
+            IOvhApiBasicQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, baseUri, logsUriPath, IOvhApiBasicQueryInformation.EmptyQueryParameters, string.Empty);
             try
             {
                 await httpRepository.HttpJsonAsync<long[]>(queryInformation);
@@ -191,7 +191,7 @@ public class OvhApiTests
     private static void BuildMocks(IIoCContainer container,
         out IOvhApiToken token,
         out Mock<IHttpClientFactory> httpClientFactoryMock,
-        out IOvhApiHttpRepository httpRepository
+        out IOvhApiBasicHttpRepository httpRepository
     )
     {
         // Create authentication token.
@@ -200,7 +200,7 @@ public class OvhApiTests
         // Build HTTP repository and HTTP client factory mock
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
 
-        httpRepository = container.Resolve<IOvhApiHttpRepository>
+        httpRepository = container.Resolve<IOvhApiBasicHttpRepository>
         (
             IoCNamedParameter.CreateNew("httpClientFactory", httpClientFactoryMock.Object)
         );
