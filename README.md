@@ -112,7 +112,7 @@ Contract / interface:
 - Classic:
 
     ```csharp
-    public interface ISampleApiQueryInformation : IBasicQueryInformation<ISampleApiToken> { }
+    public interface ISampleApiQueryInformation : IQueryInformation<ISampleApiToken> { }
     ```
 
 - New: under implementation
