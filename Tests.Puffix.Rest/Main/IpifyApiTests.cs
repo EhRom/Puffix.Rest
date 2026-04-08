@@ -10,7 +10,7 @@ using System.Text;
 using Tests.Puffix.Rest.Infra;
 using Tests.Puffix.Rest.Infra.Ipify;
 
-namespace Tests.Puffix.Rest.Basic;
+namespace Tests.Puffix.Rest.Main;
 
 public class IpifyApiTests
 {
@@ -34,12 +34,13 @@ public class IpifyApiTests
         try
         {
             IIpifyApiToken token = container.Resolve<IIpifyApiToken>();
-            IIpifyApiBasicHttpRepository httpRepository = container.Resolve<IIpifyApiBasicHttpRepository>();
+            IIpifyApiHttpRepository httpRepository = container.Resolve<IIpifyApiHttpRepository>();
 
             string ipifyUri = (container.Configuration[nameof(ipifyUri)] ?? string.Empty).TrimEnd('/');
             IDictionary<string, string> queryParameters = new Dictionary<string, string>();
+            IQueryContent queryContent = EmptyContent.CreateNew();
 
-            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, string.Empty);
+            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, queryContent);
             string actualResult = await httpRepository.HttpAsync(queryInformation);
 
             Assert.That(actualResult, Is.Not.Null);
@@ -58,12 +59,13 @@ public class IpifyApiTests
         try
         {
             IIpifyApiToken token = container.Resolve<IIpifyApiToken>();
-            IIpifyApiBasicHttpRepository httpRepository = container.Resolve<IIpifyApiBasicHttpRepository>();
+            IIpifyApiHttpRepository httpRepository = container.Resolve<IIpifyApiHttpRepository>();
 
             string ipifyUri = (container.Configuration[nameof(ipifyUri)] ?? string.Empty).TrimEnd('/');
             IDictionary<string, string> queryParameters = new Dictionary<string, string>();
+            IQueryContent queryContent = EmptyContent.CreateNew();
 
-            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, string.Empty);
+            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, queryContent);
             IResultInformation<string> actualResult = await httpRepository.HttpWithStatusAsync(queryInformation);
 
             Assert.That(actualResult, Is.Not.Null);
@@ -85,7 +87,7 @@ public class IpifyApiTests
     {
         try
         {
-            BuildMocks(container, out IIpifyApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IIpifyApiBasicHttpRepository httpRepository);
+            BuildMocks(container, out IIpifyApiToken token, out Mock<IHttpClientFactory> httpClientFactoryMock, out IIpifyApiHttpRepository httpRepository);
 
             // Register HTTP Calls
             using HttpContent expectedHttpContent = new StringContent(sampleResponse ?? string.Empty, Encoding.UTF8, "text/^plain");
@@ -107,11 +109,9 @@ public class IpifyApiTests
             // Test
             string ipifyUri = (container.Configuration[nameof(ipifyUri)] ?? string.Empty).TrimEnd('/');
             IDictionary<string, string> queryParameters = new Dictionary<string, string>();
+            IQueryContent queryContent = EmptyContent.CreateNew();
 
-            // TODO test JSON format >> ?format=json
-            //string expectedQueryParameters = BuildExpectedQueryParameters(queryParameters);
-
-            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, string.Empty);
+            IIpifyApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, ipifyUri, string.Empty, queryParameters, queryContent);
 
             // TODO test HttpWithStatusAsync
             string actualResult = await httpRepository.HttpAsync(queryInformation);
@@ -147,7 +147,7 @@ public class IpifyApiTests
     private static void BuildMocks(IIoCContainer container,
         out IIpifyApiToken token,
         out Mock<IHttpClientFactory> httpClientFactoryMock,
-        out IIpifyApiBasicHttpRepository httpRepository
+        out IIpifyApiHttpRepository httpRepository
     )
     {
         // Create authentication token.
@@ -156,7 +156,7 @@ public class IpifyApiTests
         // Build HTTP repository and HTTP client factory mock
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
 
-        httpRepository = container.Resolve<IIpifyApiBasicHttpRepository>
+        httpRepository = container.Resolve<IIpifyApiHttpRepository>
         (
             IoCNamedParameter.CreateNew("httpClientFactory", httpClientFactoryMock.Object)
         );

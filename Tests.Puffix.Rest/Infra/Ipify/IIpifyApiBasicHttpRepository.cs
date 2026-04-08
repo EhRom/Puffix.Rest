@@ -2,4 +2,4 @@
 
 namespace Tests.Puffix.Rest.Infra.Ipify;
 
-public interface IIpifyApiBasicHttpRepository : IBasicRestHttpRepository<IIpifyApiBasicQueryInformation, IIpifyApiToken> { }
+public interface IIpifyApiBasicHttpRepository : IBasicRestHttpRepository<IIpifyApiQueryInformation, IIpifyApiToken> { }
