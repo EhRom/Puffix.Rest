@@ -7,8 +7,8 @@ public class EmptyContent : IQueryContent
         return new EmptyContent();
     }
 
-    public HttpContent GetQueryContent()
+    public HttpContent? GetQueryContent()
     {
-        return new StringContent(string.Empty);
+        return null;
     }
 }

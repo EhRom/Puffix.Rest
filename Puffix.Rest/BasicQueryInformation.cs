@@ -10,7 +10,7 @@ public abstract class BasicQueryInformation<TokenT>(HttpMethod httpMethod, Token
     IQueryInformation<TokenT>
         where TokenT : IToken
 {
-    public override HttpContent GetQueryContent()
+    public override HttpContent? GetQueryContent()
     {
         return new StringContent(queryContent ?? string.Empty, Encoding.UTF8, "application/json");
     }

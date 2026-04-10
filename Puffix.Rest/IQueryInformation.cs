@@ -13,7 +13,7 @@ public interface IQueryInformation<TokenT>
 
     Uri GetUriWithParameters();
 
-    HttpContent GetQueryContent();
+    HttpContent? GetQueryContent();
 
     IDictionary<string, IEnumerable<string>> GetAuthenticationHeader();
 }

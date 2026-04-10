@@ -9,11 +9,9 @@ public class FormQueryContent(IDictionary<string, string> queryContent) : IQuery
         return new FormQueryContent(queryContent);
     }
 
-    public HttpContent GetQueryContent()
+    public HttpContent? GetQueryContent()
     {
         FormUrlEncodedContent content = new FormUrlEncodedContent(queryContent);
-        //, "application/x-www-form-urlencoded");
-
         return content;
     }
 }

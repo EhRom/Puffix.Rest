@@ -7,7 +7,7 @@ public class QueryInformation<TokenT>(HttpMethod httpMethod, TokenT? token, IDic
     IQueryInformation<TokenT>
         where TokenT : IToken
 {
-    public override HttpContent GetQueryContent()
+    public override HttpContent? GetQueryContent()
     {
         return queryContent.GetQueryContent();
     }

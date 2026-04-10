@@ -9,7 +9,7 @@ public abstract class StringQueryContent(string queryContent) : IQueryContent
     protected abstract string MimeType { get; }
 
 
-    public HttpContent GetQueryContent()
+    public HttpContent? GetQueryContent()
     {
         return new StringContent(queryContent ?? string.Empty, Encoding.UTF8, MimeType);
     }

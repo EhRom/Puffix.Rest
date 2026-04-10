@@ -2,5 +2,5 @@
 
 public interface IQueryContent
 {
-    HttpContent GetQueryContent();
+    HttpContent? GetQueryContent();
 }

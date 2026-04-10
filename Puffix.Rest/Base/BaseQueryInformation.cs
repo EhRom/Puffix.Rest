@@ -76,7 +76,7 @@ public class BaseQueryInformation<TokenT, QueryContentT>(HttpMethod httpMethod, 
         return queryParameterBuilder.ToString();
     }
 
-    public virtual HttpContent GetQueryContent()
+    public virtual HttpContent? GetQueryContent()
     {
         throw new NotImplementedException("Should be overriden in sub-classes");
     }
@@ -93,6 +93,6 @@ public class BaseQueryInformation<TokenT, QueryContentT>(HttpMethod httpMethod, 
 
         string completeUri = string.IsNullOrEmpty(processedQueryParameter) ? uriWithPath : $"{uriWithPath}?{processedQueryParameter.Trim('?')}";
 
-        return $"{nameof(QueryInformation<TokenT>)}--{httpMethod}--{completeUri}";
+        return $"{nameof(QueryInformation<TokenT>)}--{QuerytHttpMethod}--{completeUri}";
     }
 }
