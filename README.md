@@ -109,31 +109,46 @@ The query description embeds and manages all the information for the query infor
 
 Contract / interface:
 
-- Classic:
-
-    ```csharp
-    public interface ISampleApiQueryInformation : IQueryInformation<ISampleApiToken> { }
-    ```
-
-- New: under implementation
+```csharp
+public interface IIpifyApiQueryInformation : IQueryInformation<IIpifyApiToken> { }
+```
 
 Implementation:
 
-- Classic:
+- Regular (*new*):
 
     ```csharp
-    public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
+    public class SampleApiQueryInformation(HttpMethod httpMethod, ISampleApiToken? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent) :
+        QueryInformation<ISampleApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
+        ISampleApiQueryInformation
+    {
+        public static ISampleApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
+        {
+            return new SampleApiQueryInformation(httpMethod, default, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public static ISampleApiQueryInformation CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
+        {
+            return new SampleApiQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+    }
+    ```
+
+- Basic (*old*):
+
+    ```csharp
+    public class SampleApiBasicQueryInformation(HttpMethod httpMethod, ISampleApiToken? token, IDictionary<string, IEnumerable<string>> headers, string baseUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent) :
         BasicQueryInformation<ISampleApiToken>(httpMethod, token, headers, baseUri, queryPath, queryParameters, queryContent),
         ISampleApiQueryInformation
     {
         public static ISampleApiQueryInformation CreateNewUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
         {
-            return new SampleApiQueryInformation(httpMethod, default, headers, apiUri, queryPath, queryParameters, queryContent);
+            return new SampleApiBasicQueryInformation(httpMethod, default, headers, apiUri, queryPath, queryParameters, queryContent);
         }
 
-        public static ISampleApiQueryInformation  CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        public static ISampleApiQueryInformation CreateNewAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
         {
-            return new SampleApiQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
+            return new SampleApiBasicQueryInformation(httpMethod, token, headers, apiUri, queryPath, queryParameters, queryContent);
         }
     }
     ```
@@ -150,71 +165,126 @@ The HTTP repository contains the logic to implement the HTTP client, to send the
 
 Contract / interface:
 
-- Classic:
+- Regular (*new*):
+
+    ```csharp
+    public interface ISampleApiHttpRepository : IRestHttpRepository<ISampleApiQueryInformation, ISampleApiToken> { }
+    ```
+
+- Basic (*old*):
 
     ```csharp
     public interface ISampleApiHttpRepository : IBasicRestHttpRepository<ISampleApiQueryInformation, ISampleApiToken> { }
     ```
 
-- New: under implementation
-
 Implementation:
 
-- Classic:
+- Regular (*new*):
 
     ```csharp
     public class SampleApiHttpRepository(IHttpClientFactory httpClientFactory) :
-        BasicRestHttpRepository<ISampleApiQueryInformation, ISampleApiToken>(httpClientFactory),
+        RestHttpRepository<ISampleApiQueryInformation, ISampleApiToken>(httpClientFactory),
         ISampleApiHttpRepository
     {
-        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
-        {
-            IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
-            return SampleApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
-        }
-
-        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
-        {
-            return SampleApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
-        }
-
-        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
         {
             IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
             return SampleApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
         }
 
-        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
         {
             return SampleApiQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
+        {
+            IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
+            return SampleApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, IQueryContent queryContent)
+        {
+            return SampleApiQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
         }
     }
     ```
 
-- New: under implementation
+- Basic (*old*):
+
+    ```csharp
+    public class SampleApiBasicHttpRepository(IHttpClientFactory httpClientFactory) :
+        BasicRestHttpRepository<ISampleApiQueryInformation, ISampleApiToken>(httpClientFactory),
+        ISampleApiBasicHttpRepository
+    {
+        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        {
+            IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
+            return SampleApiBasicQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public override ISampleApiQueryInformation BuildAuthenticatedQuery(ISampleApiToken token, HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        {
+            return SampleApiBasicQueryInformation.CreateNewAuthenticatedQuery(token, httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        {
+            IDictionary<string, IEnumerable<string>> headers = new Dictionary<string, IEnumerable<string>>();
+            return SampleApiBasicQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+
+        public override ISampleApiQueryInformation BuildUnauthenticatedQuery(HttpMethod httpMethod, IDictionary<string, IEnumerable<string>> headers, string apiUri, string queryPath, IDictionary<string, string> queryParameters, string queryContent)
+        {
+            return SampleApiBasicQueryInformation.CreateNewUnauthenticatedQuery(httpMethod, headers, apiUri, queryPath, queryParameters, queryContent);
+        }
+    }
+    ```
 
 The HTTP repository is also used as a gateway to initialise the information objects in the request. Thus, for basic calls, only references to the repository and the token are required.
 
-> TODO Basic
-
 ## Base call
 
-```csharp
-string apiBaseUri = "https://api.ipify.org";
-string queryContent = string.Empty;
-IDictionary<string, string> queryParameters = new Dictionary<string, string>();
+- Regular (*new*):
 
-ISampleApiToken token = container.Resolve<ISampleApiToken>();
-ISampleApiHttpRepository httpRepository = container.Resolve<ISampleApiHttpRepository>();
 
-ISampleApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, apiBaseUri, queryPath, queryParameters, queryContent);
+    ```csharp
+    string apiBaseUri = "https://api.ipify.org";
+    IDictionary<string, string> queryParameters = new Dictionary<string, string>();
 
-string response = await httpRepository.HttpAsync(queryInformation);
+    ISampleApiToken token = container.Resolve<ISampleApiToken>();
+    ISampleApiHttpRepository httpRepository = container.Resolve<ISampleApiHttpRepository>();
+    IQueryContent queryContent = EmptyContent.CreateNew();
 
-// OR
+    ISampleApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, apiBaseUri, queryPath, queryParameters, queryContent);
 
-IResultInformation<string> response = await httpRepository.HttpWithStatusAsync(queryInformation);
+    string response = await httpRepository.HttpAsync(queryInformation);
 
-```
+    // OR
+
+    IResultInformation<string> response = await httpRepository.HttpWithStatusAsync(queryInformation);
+
+    ```
+
+- Basic (*old*):
+
+
+    ```csharp
+    string apiBaseUri = "https://api.ipify.org";
+    string queryContent = string.Empty;
+    IDictionary<string, string> queryParameters = new Dictionary<string, string>();
+
+    ISampleApiToken token = container.Resolve<ISampleApiToken>();
+    ISampleApiBasicHttpRepository httpRepository = container.Resolve<ISampleApiBasicHttpRepository>();
+
+    ISampleApiQueryInformation queryInformation = httpRepository.BuildAuthenticatedQuery(token, HttpMethod.Get, apiBaseUri, queryPath, queryParameters, queryContent);
+
+    string response = await httpRepository.HttpAsync(queryInformation);
+
+    // OR
+
+    IResultInformation<string> response = await httpRepository.HttpWithStatusAsync(queryInformation);
+
+    ```
 
 Complete samples are available in the `Tests.Puffix.Rest` project.
