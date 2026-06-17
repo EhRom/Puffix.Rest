@@ -1,4 +1,4 @@
-f# Puffix REST
+# Puffix REST
 
 Library to handle REST API in your project.
 
