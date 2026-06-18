@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/GithubBuild/">
+    <File Path=".github/workflows/main.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Puffix.Rest/Puffix.Rest.csproj" />
+  <Project Path="Tests.Puffix.Rest/Tests.Puffix.Rest.csproj" />
+</Solution>

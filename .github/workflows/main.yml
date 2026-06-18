@@ -19,8 +19,17 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: global
+    permissions:
+      id-token: write
 
     steps:
+    - name: NuGet login (OIDC)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
     - name: Checkout
       id: checkout
       uses: actions/checkout@v6
@@ -47,4 +56,4 @@ jobs:
 
     - name: Publish Nuget Package
       id: dotnet-nuget-push
-      run: dotnet nuget push /home/runner/work/Puffix.Rest/Puffix.Rest/Puffix.Rest/bin/Release/Puffix.Rest.${{ env.PACKAGE_VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push /home/runner/work/Puffix.Rest/Puffix.Rest/Puffix.Rest/bin/Release/Puffix.Rest.${{ env.PACKAGE_VERSION }}.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
